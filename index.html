@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html ng-app="SmartMirror">
+<head>
+  <meta charset="utf-8">
+  <title>Smart Mirror</title>
+  <!-- Styles and Resources -->
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,800,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body ng-controller="MirrorCtrl as commands">
+  <div class="top">
+    <div class="top-left">
+      <div class="date grey">{{date | date : 'EEEE, MMMM d yyyy'}}</div>
+      <div class="time">{{date | date : 'hh:mm a'}}</div>
+    </div>
+    <div class="top-right">
+      <div class="weather">
+        <div class="weather-today">
+          <span class="tempreture">{{currentForcast.temperature}}&deg;</span>
+        </div>
+        <div class="weather-week-descriptor">{{weeklyForcast.summary}}</div>
+        <div class="weather-week" ng-repeat="forcast in weeklyForcast.data" ng-if="$index > 0">
+          <div class="weather-week-day">
+            <span class="day light-grey">{{forcast.day}}</span>
+            <span class="tempreture tempreture-min">{{forcast.temperatureMin}}</span>
+            <span class="tempreture tempreture-max">{{forcast.temperatureMax}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="middle-center">
+      <h1>{{complement}}</h1>
+      <h3 ng-show="!(user.name === undefined)">{{user.name}}</h3>
+      <!-- <div class="listening" ng-show="listening">Ready: {{focus}}</div> -->
+      <div class="contents-box map animate-grow" ng-show="focus == 'map'">
+        <img class="map animate-grow" ng-src="{{map}}"/>
+      </div>
+      <div class="contents-box subway animate-grow" ng-show="focus == 'subway'">
+        <p>{{subwayinfo}}</p>
+      </div>
+      <div class="contents-box map animate-grow" ng-show="focus == 'youtube'">
+        <iframe id="youtube_player" class="yt_player_iframe" width="100%" height="90%" ng-src="{{currentYoutubeUrl}}"  allowfullscreen="true" allowscriptaccess="always" frameborder="0"></iframe>
+      </div>
+    </div>
+    <div class="bottom-center">
+      <!-- Command list -->
+      <div class="commands animate-grow" ng-show="focus == 'commands'">
+        <h2>사용 가능한 질문</h2>
+        <dl>
+          <dt>사용 가능한 질문</dt>
+          <dd>사용 가능한 질문을 보여줍니다.</dd>
+          <dt>집</dt>
+          <dd>홈 스크린으로 돌아갑니다.</dd>
+          <dt>___ 동영상 재생</dt>
+          <dd>유튜브 동영상을 재생합니다.</dd>
+          <dt>지도 보여줘</dt>
+          <dd>현재 거주하는 도시의 지도를 보여줍니다.</dd>
+          <dt>________지도 보여줘</dt>
+          <dd>원하는 곳의 지도를 보여줍니다</dd>
+          <dt>___역 __호선 __행선</dt>
+          <dd>열차 도착 정보를 알려드립니다.</dd>
+          <dt>음악 재생</dt>
+          <dd>음악을 재생 합니다.</dd>
+          <dt>불 (__색)으로 (켜/꺼)줘</dt>
+          <dd>필립스 휴 전등을 제어합니다.</dd>
+        </dl>
+        <small>
+          We are using node <script>document.write(process.versions.node)</script>,
+          Chrome <script>document.write(process.versions.chrome)</script>,
+          and Electron <script>document.write(process.versions.electron)</script>.
+        </small>
+      </div>
+      <div class="interim-result" ng-bind="interimResult"></div>
+    </div>
+    <div class="colors animate-grow" ng-show="focus == 'colors'">
+      <div class="color-block" ng-repeat="color in colors" style="background-color:{{color}}"></div>
+    </div>
+  </div>
+  <!-- Debug Buttons -->
+  <div class="debug-info">
+    <!--<button ng-click="debug = true">Open Debug</button>-->
+  </div>
+  <div class="debug-info" ng-show="debug == true">
+    <button ng-click="focus = (focus == 'map')?'default':'map'">Map</button>
+    <button ng-click="focus = (focus == 'subway')?'default':'subway'">Subway</button>
+    <button ng-click="focus = (focus == 'youtube')?'default':'youtube'">Youtube</button>
+    <button ng-click="focus = (focus == 'colors')?'default':'colors'">Colors</button>
+    <button ng-click="focus = (focus == 'commands')?'default':'commands'">Commands</button>
+    <button ng-click="debug = false">Close Debug</button>
+    <!-- Has results -->
+    <div ng-show="commands.results.length > 0">
+      <button class="btn btn-default" ng-click="commands.clearResults()">Clear</button>
+      <hr/>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="result in commands.results">
+          <span class="badge">{{ result.date | date : 'EEE MMM, yyyy hh:mm:ss a' }}</span>
+          {{ result.content }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- Sleep cover -->
+  <div ng-show="focus == 'sleep'" class="sleep-cover fade"></div>
+  <!-- Libraries -->
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.min.js"></script>
+  <script src="bower_components/moment/min/moment.min.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/xml2json/xml2json.js"></script>
+
+  <!-- App -->
+  <script src="js/annyang.js"></script>
+  <script src="config.js"></script>
+  <script src="js/command.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/annyang-service.js"></script>
+  <script src="js/weather-service.js"></script>
+  <script src="js/map-service.js"></script>
+  <script src="js/subway-service.js"></script>
+  <script src="js/youtube-service.js"></script>
+  <script src="js/hue-service.js"></script>
+  <script src="js/geolocation-service.js"></script>
+  <script src="js/sound-cloud-service.js"></script>
+  <script src="js/controller.js"></script>
+  <script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
+
+</body>
+</html>
