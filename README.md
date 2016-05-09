@@ -12,7 +12,7 @@ http://docs.smart-mirror.io/
 Evan Cohen smart-mirror http://smart-mirror.io/
 
 #### Project Review ####
-http://mojosoeun.tistory.com/136
+http://blog.embian.com/120
 
 #### API ####
 1. FORCAST_API : http://forecast.io/
